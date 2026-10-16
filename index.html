@@ -1,0 +1,649 @@
+.
+
+<!DOCTYPE html>
+
+<html lang="ru">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<title>ЭКО город</title>
+
+<style>
+
+:root {
+
+box-sizing: border-box;
+
+padding-top: env(safe-area-inset-top, 0px);
+
+padding-bottom: env(safe-area-inset-bottom, 0px);
+
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+
+height: 100%;
+
+margin: 0;
+
+font-family: Arial, sans-serif;
+
+background: #f5f5f5;
+
+}
+
+#app {
+
+display: flex;
+
+flex-direction: column;
+
+height: 100%;
+
+}
+
+#top {
+
+display: flex;
+
+gap: 10px;
+
+padding: 6px 10px;
+
+border-bottom: 1px solid #ccc;
+
+background-color: #fff;
+
+background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90' viewBox='0 0 90 90'%3E%3Cg fill='%23a9d5b0' fill-opacity='0.5'%3E%3Cpath d='M15 8c10 0 16 8 16 16 0 10-8 16-16 16-2-10 0-22 0-32z'/%3E%3Cpath d='M68 45c10 0 16 8 16 16 0 10-8 16-16 16-2-10 0-22 0-32z' transform='rotate(60 68 61)'/%3E%3Cpath d='M34 63c10 0 16 8 16 16 0 10-8 16-16 16-2-10 0-22 0-32z' transform='rotate(-40 34 79)'/%3E%3C/g%3E%3C/svg%3E");
+
+background-size: 90px 90px;
+
+background-repeat: repeat;
+
+flex-wrap: nowrap;
+
+flex: 0 0 auto;
+
+max-height: 130px;
+
+overflow-y: auto;
+
+}
+
+.panel {
+
+border: 1px solid #ccc;
+
+border-radius: 6px;
+
+padding: 6px 10px;
+
+background: rgba(250, 250, 250, 0.85);
+
+}
+
+.panel h2 {
+
+font-size: 12px;
+
+margin: 0 0 4px 0;
+
+}
+
+#score-panel {
+
+min-width: 160px;
+
+}
+
+#score-value {
+
+font-size: 18px;
+
+text-align: center;
+
+border: 1px dashed #999;
+
+padding: 3px;
+
+}
+
+#score-buttons {
+
+margin-top: 4px;
+
+display: flex;
+
+gap: 6px;
+
+}
+
+#score-buttons button {
+
+flex: 1;
+
+padding: 4px;
+
+font-size: 12px;
+
+}
+
+#leaderboard-panel {
+
+flex: 1;
+
+min-width: 200px;
+
+max-height: 112px;
+
+overflow-y: auto;
+
+}
+
+#leaderboard {
+
+list-style: none;
+
+margin: 0;
+
+padding: 0;
+
+font-size: 12px;
+
+}
+
+#leaderboard li {
+
+display: flex;
+
+align-items: center;
+
+justify-content: space-between;
+
+padding: 2px 0;
+
+border-bottom: 1px solid #eee;
+
+}
+
+#leaderboard li.me {
+
+font-weight: bold;
+
+}
+
+#leaderboard li .left {
+
+display: flex;
+
+align-items: center;
+
+min-width: 0;
+
+}
+
+#leaderboard li .left span.player-name {
+
+overflow: hidden;
+
+text-overflow: ellipsis;
+
+white-space: nowrap;
+
+}
+
+.avatar-mini {
+
+width: 20px;
+
+height: 20px;
+
+border-radius: 50%;
+
+display: inline-flex;
+
+align-items: center;
+
+justify-content: center;
+
+font-size: 10px;
+
+color: #fff;
+
+margin-right: 6px;
+
+overflow: hidden;
+
+flex-shrink: 0;
+
+}
+
+.avatar-mini img {
+
+width: 100%;
+
+height: 100%;
+
+object-fit: cover;
+
+}
+
+#map-wrap {
+
+flex: 1;
+
+position: relative;
+
+overflow: hidden;
+
+background-color: #e8e8e8;
+
+}
+
+#map-wrap iframe {
+
+position: absolute;
+
+top: 0;
+
+left: 0;
+
+width: 100%;
+
+height: 100%;
+
+border: 0;
+
+}
+
+#proof {
+
+margin-top: 6px;
+
+font-size: 11px;
+
+}
+
+#proof-label {
+
+display: block;
+
+margin-bottom: 3px;
+
+}
+
+#proof-attach {
+
+display: inline-flex;
+
+align-items: center;
+
+gap: 6px;
+
+padding: 4px 8px;
+
+border: 1px dashed #999;
+
+border-radius: 4px;
+
+cursor: pointer;
+
+background: #fff;
+
+width: 100%;
+
+justify-content: center;
+
+font-size: 11px;
+
+}
+
+#proof-filename {
+
+display: block;
+
+margin-top: 3px;
+
+font-size: 11px;
+
+color: #555;
+
+}
+
+#profile-panel {
+
+display: flex;
+
+flex-direction: column;
+
+align-items: center;
+
+min-width: 140px;
+
+}
+
+#avatar-preview {
+
+width: 40px;
+
+height: 40px;
+
+border-radius: 50%;
+
+background: #ddd;
+
+border: 1px solid #bbb;
+
+display: flex;
+
+align-items: center;
+
+justify-content: center;
+
+font-size: 16px;
+
+color: #888;
+
+overflow: hidden;
+
+margin-bottom: 4px;
+
+}
+
+#avatar-preview img {
+
+width: 100%;
+
+height: 100%;
+
+object-fit: cover;
+
+}
+
+#avatar-attach {
+
+display: inline-block;
+
+font-size: 11px;
+
+padding: 4px 8px;
+
+border: 1px dashed #999;
+
+border-radius: 4px;
+
+cursor: pointer;
+
+background: #fff;
+
+margin-bottom: 6px;
+
+}
+
+#nickname-input {
+
+width: 100%;
+
+padding: 4px 6px;
+
+font-size: 13px;
+
+border: 1px solid #ccc;
+
+border-radius: 4px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="app">
+
+<div id="top">
+
+<div class="panel" id="score-panel">
+
+<h2>Ваши баллы</h2>
+
+<div id="score-value">0</div>
+
+<div id="score-buttons">
+
+<button id="help-city">Я помог своему городу</button>
+
+</div>
+
+<div id="proof">
+
+<span id="proof-label">Выслать доказательства:</span>
+
+<label id="proof-attach" for="proof-input"> Прикрепить фото</label>
+
+<input type="file" id="proof-input" accept="image/*" style="display:none">
+
+<span id="proof-filename"></span>
+
+</div>
+
+</div>
+
+<div class="panel" id="profile-panel">
+
+<h2>Мой профиль</h2>
+
+<div id="avatar-preview"></div>
+
+<label id="avatar-attach" for="avatar-input">Загрузить аватар</label>
+
+<input type="file" id="avatar-input" accept="image/*" style="display:none">
+
+<input type="text" id="nickname-input" placeholder="Ваш ник" maxlength="20">
+
+</div>
+
+<div class="panel" id="leaderboard-panel">
+
+<h2>Топ пользователей</h2>
+
+<ul id="leaderboard"></ul>
+
+</div>
+
+</div>
+
+<div id="map-wrap">
+
+<a href="https://yandex.ru/maps/org/shkola_2006_korpus_planeta_znaniy/1035775289/?utm_medium=mapframe&utm_source=maps" style="color:#eee;font-size:12px;position:absolute;top:0px;">Школа № 2006, корпус Планета знаний</a>
+
+<a href="https://yandex.ru/maps/213/moscow/category/school/184106240/?utm_medium=mapframe&utm_source=maps" style="color:#eee;font-size:12px;position:absolute;top:14px;">Общеобразовательная школа в Москве</a>
+
+<iframe src="https://yandex.ru/map-widget/v1/?azimuth=0.012350288502464456&ll=37.583152%2C55.565541&mode=poi&poi%5Bpoint%5D=37.582387%2C55.566214&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D1035775289&z=17.25" allowfullscreen="true"></iframe>
+
+</div>
+
+</div>
+
+<script>
+
+// ---- Баллы и топ ----
+
+var score = 0;
+
+var scoreEl = document.getElementById('score-value');
+
+var players = [
+
+{ name: 'alex-55', score: 210, color: '#7fa6bf' },
+
+{ name: 'maria_k', score: 185, color: '#bf7f9c' },
+
+{ name: 'ivan.eco', score: 125, color: '#8fbf7f' },
+
+{ name: 'olga89', score: 90, color: '#d9a35c' }
+
+];
+
+var me = { name: 'Вы', score: 0, color: '#aaa', avatarUrl: null };
+
+players.push(me);
+
+function avatarHtml(p) {
+
+if (p === me && me.avatarUrl) {
+
+return '<span class="avatar-mini"><img src="' + me.avatarUrl + '" alt=""></span>';
+
+}
+
+var letter = p.name.charAt(0).toUpperCase();
+
+return '<span class="avatar-mini" style="background:' + p.color + '">' + letter + '</span>';
+
+}
+
+function renderLeaderboard() {
+
+me.score = score;
+
+var sorted = players.slice().sort(function (a, b) { return b.score - a.score; });
+
+var ul = document.getElementById('leaderboard');
+
+ul.innerHTML = '';
+
+sorted.forEach(function (p, i) {
+
+var li = document.createElement('li');
+
+if (p === me) li.className = 'me';
+
+li.innerHTML =
+
+'<span class="left">' + (i + 1) + '.&nbsp;' + avatarHtml(p) +
+
+'<span class="player-name">' + p.name + '</span></span>' +
+
+'<span>' + p.score + '</span>';
+
+ul.appendChild(li);
+
+});
+
+}
+
+var helpBtn = document.getElementById('help-city');
+
+var helpBtnDefaultText = helpBtn.textContent;
+
+var cooldownMs = 60 * 1000;
+
+var cooldownEnd = 0;
+
+var cooldownTimer = null;
+
+function updateCooldownDisplay() {
+
+var remaining = cooldownEnd - Date.now();
+
+if (remaining <= 0) {
+
+helpBtn.disabled = false;
+
+helpBtn.textContent = helpBtnDefaultText;
+
+if (cooldownTimer) {
+
+clearInterval(cooldownTimer);
+
+cooldownTimer = null;
+
+}
+
+return;
+
+}
+
+helpBtn.disabled = true;
+
+helpBtn.textContent = 'Подождите ' + Math.ceil(remaining / 1000) + ' сек';
+
+}
+
+helpBtn.addEventListener('click', function () {
+
+score += 5;
+
+scoreEl.textContent = score;
+
+renderLeaderboard();
+
+cooldownEnd = Date.now() + cooldownMs;
+
+updateCooldownDisplay();
+
+cooldownTimer = setInterval(updateCooldownDisplay, 1000);
+
+});
+
+document.getElementById('proof-input').addEventListener('change', function (e) {
+
+var f = e.target.files[0];
+
+document.getElementById('proof-filename').textContent = f ? f.name : '';
+
+});
+
+// ---- Профиль: ник и аватар ----
+
+var nicknameInput = document.getElementById('nickname-input');
+
+nicknameInput.addEventListener('input', function () {
+
+me.name = nicknameInput.value.trim() || 'Вы';
+
+renderLeaderboard();
+
+});
+
+var avatarInput = document.getElementById('avatar-input');
+
+var avatarPreview = document.getElementById('avatar-preview');
+
+avatarInput.addEventListener('change', function (e) {
+
+var f = e.target.files[0];
+
+if (!f) return;
+
+var reader = new FileReader();
+
+reader.onload = function (ev) {
+
+me.avatarUrl = ev.target.result;
+
+avatarPreview.innerHTML = '<img src="' + me.avatarUrl + '" alt="аватар">';
+
+renderLeaderboard();
+
+};
+
+reader.readAsDataURL(f);
+
+});
+
+renderLeaderboard();
+
+</script>
+
+</body>
+
+</html>
